@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <otter>com.mryx.plugins.filter.OtterLog</otter>
+    <split>com.mryx.plugins.filter.SplitLog</split>
+    <json_array>com.mryx.plugins.filter.JsonArrayLog</json_array>
+    <fix_and_json>com.mryx.plugins.filter.FixAndJsonLog</fix_and_json>
+</config>

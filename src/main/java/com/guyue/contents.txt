@@ -1,0 +1,138 @@
+1. Flink基本介绍
+    2020-03-02 100%
+
+2. Flink-WordCount
+    2020-12月 100%
+
+3. Flink DataSource 自定义 Source
+    2020-03-03 100%
+        fromParallelCollection
+        readTextFile
+        FlinkKafkaConsumer
+        自定义 Source + Checkpoint 机制
+4. 算子
+    2020-03-03 100%
+    map, flatmap, filter, keyBy, reduce, fold，aggregate(sum, max, min)
+
+5. flink 自定义 Sink
+    2020-03-03 10%
+        PrintSinkFunction 100%
+    2020-03-03 100%
+        RichSinkFunction 自定义类似 print() 函数的功能.
+    2020-03-13, 2020-03-14
+        zhisheng 自定义 Source, Sink
+
+6. checkpoint和savepoint机制
+
+    2020-03-07 100%
+        checkpoint 保存任务状态数据.
+        checkpoint 中恢复任务数据.
+        内存 Backend, FSBackend学习.
+        checkpoint 文件数与 SubTask的关系.
+    2020-03-13, 2020-03-14
+        zhisheng checkpoint & savepoint 机制
+
+7. Task, SubTask, TaskSlot
+
+    2020-03-03 20%
+    2020-03-04 100%
+    2020-03-13, 2020-03-14
+    zhisheng TaskSlot, Parallelism 机制
+
+8. fink 的时间概念
+
+    2020-03-04
+        时间概念 100%
+    2020-03-13, 2020-03-14
+    zhisheng 时间概念
+
+9. flink on yarn
+    2020-03-12 50% 只是根据视频过了一遍任务是怎么被提交的。
+
+10. Flink Table & Sql
+
+11. fink 双流 Join
+    2020-03-11
+    inner-join processFunction.
+    left-join coGroupJoin.
+    订单双流 join.
+
+12. flink 异步 IO
+
+    2020-03-06 80% 程序写过了,测试过了,但没有总结文章.
+    2020-03-13, 2020-03-14
+    zhisheng Flink Async I/O 机制
+
+13. flink 维表 Join
+    202-03-06 100%
+        练习了MySql 同步,异步 维表 Join.
+        练习了获取高德地图 同步, 异步 维表 Join.
+
+
+14. zhisheng Flink Async I/O 机制
+        2020-03-13, 2020-03-14
+
+15. flink 窗口与窗口函数
+        2020-03-04 窗口 30%
+        2020-03-05 滑动窗口, 滑动窗口, Session 窗口 100%. WaterMark + 3种窗口的触发机制。
+
+16. Flink State 状态学习
+        2020-03-07 30%
+        KeyedState, OperatorState 的类型.
+        checkpoint 文件数, SubTask 状态数据的关系.
+        202-03-12 100%
+        flink + hashSet / Bloom 计算 UV.
+        2020-03-13, 2020-03-14
+        zhisheng Flink 状态学习
+
+17. flink 序列化
+
+18. flink 数据类型
+
+19. flink slot 与 paramlim 理解
+    2020-03-13, 2020-03-14
+    zhisheng TaskSlot, Parallelism 机制
+
+20. flink udf
+    2020-03-12 100%. 最早翻译过官网.
+
+21. flink 追加模式与缩进模式
+
+22. flink Broadcast & 分布式缓存
+    2020-03-12 100%
+    2020-03-13, 2020-03-14
+        zhisheng Broadcast
+
+23. flink metries 监控
+    Fink Watermark 水印的概念
+        2020-03-05 30%
+        2020-03-13, 2020-03-14
+        zhisheng Watermark
+
+24. flink 累加器
+
+
+25. Flink Shuffle 机制
+    2020-03-12 100
+    Flink 数据交换和 Redistribute详解
+
+26. Flink SideOutput，sideOutputLateData
+    2020-03-12 100%
+    2020-03-13, 2020-03-14
+        zhisheng 侧输出
+
+27. Flink Trigger
+
+28. Flink evictor
+
+29. Flink Calcite
+
+    使用Calcite做Sql语法解析 https://mp.weixin.qq.com/s/Rab7TRpGO6BtyCI9KMDFRQ
+    使用Calcite解析Sql做维表关联(一) https://mp.weixin.qq.com/s/QvaTP4hqVXRmOz80z7dgrw
+    使用Calcite解析Sql做维表关联(二) https://mp.weixin.qq.com/s/X0210159Z7nrYtBNL0egqg
+    Apache Calcite 论文学习笔记 https://www.jianshu.com/p/4f4fea8abfab
+    初识Calcite——使用实例 https://blog.csdn.net/yu616568/article/details/49915577
+
+30. Physical partitioning
+    https://ci.apache.org/projects/flink/flink-docs-release-1.9/dev/stream/operators/#task-chaining-and-resource-groups
+

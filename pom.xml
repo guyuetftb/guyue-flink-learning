@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>streamlink-flink-learning</artifactId>
+	<name>streamlink-flink-learning</name>
+	<packaging>jar</packaging>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<flink.version>1.10.0</flink.version>
+		<java.version>1.8</java.version>
+		<scala.binary.version>2.11</scala.binary.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<kafka.version>2.3.0</kafka.version>
+		<vertx.mysql.version>3.8.4</vertx.mysql.version>
+		<mysql.version>5.1.48</mysql.version>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>apache.snapshots</id>
+			<name>Apache Development Snapshot Repository</name>
+			<url>https://repository.apache.org/content/repositories/snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<profiles>
+		<profile>
+			<!-- 本机环境, 不能注释掉 -->
+			<id>dev</id>
+			<properties>
+				<jar.scope>compile</jar.scope>
+			</properties>
+			<!-- 默认激活本环境 -->
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<!-- 生产环境 -->
+			<id>pro</id>
+			<properties>
+				<jar.scope>provided</jar.scope>
+			</properties>
+		</profile>
+	</profiles>
+
+	<dependencies>
+		<!-- Apache Flink dependencies -->
+		<!-- https://ci.apache.org/projects/flink/flink-docs-release-1.9/dev/projectsetup/dependencies.html -->
+		<!-- These dependencies are provided, because they should not be packaged into the JAR file. -->
+		<!-- java dependency -->
+		<!-- 下面的2个Jar 包的作用域要设置成 provided的, 只参与编译, 不参与打包, 他们已经在flink 的运行环境中了. -->
+		<!-- 如果把他们打包进用户的jar文件中, 用户的 Jar 会特别的大, 同时带来一些 依赖冲突. -->
+		<!-- 注意: 在 IDEA 中运行 Flink 程序, flink 的 scope 应该设置成 compile, 而不是 provided. 因为 IDEA 不会将 provided 添加到 classpath 中.
+			并且在 IDEA 中执行 Flink 程序时, 会引发 NoClassDefFountError 异常.
+			通常的解决办法是, 在 Maven 中添加一个 Profile, 在打包时, 设置不同的 Profile.
+		-->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-java</artifactId>
+			<version>${flink.version}</version>
+			<scope>${jar.scope}</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
+			<version>${flink.version}</version>
+			<scope>${jar.scope}</scope>
+		</dependency>
+
+		<!-- Apache Flink dependencies -->
+		<!-- scala dependency -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-scala_${scala.binary.version}</artifactId>
+			<version>${flink.version}</version>
+			<scope>${jar.scope}</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-streaming-scala_${scala.binary.version}</artifactId>
+			<version>${flink.version}</version>
+			<scope>${jar.scope}</scope>
+		</dependency>
+
+		<!-- rocksDb statebackend -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-statebackend-rocksdb_${scala.binary.version}</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+		<!-- Table API && SQL -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-table-common</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-table-api-java</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-table-api-java-bridge_${scala.binary.version}</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+
+		<!-- 如果想在本地 IDE 中运动 Table API 和 SQL 需要添加下面的依赖 Start -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-table-planner_${scala.binary.version}</artifactId>
+			<version>1.9.0</version>
+			<scope>${jar.scope}</scope>
+		</dependency>
+
+		<!-- or.. (for the new Blink planner)
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-table-planner-blink_2.11</artifactId>
+			<version>1.9.0</version>
+			<scope>provided</scope>
+		</dependency>
+		-->
+		<!-- 如果想在本地 IDE 中运行 Table API 和 SQL 需要添加下面的依赖 End -->
+
+		<!-- ************************** Flink Connector START ************************** -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
+			<version>${flink.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.kafka</groupId>
+					<artifactId>kafka_${scala.binary.version}</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- flink连接hadoop相关依赖 -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-shaded-hadoop2</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka_2.11</artifactId>
+		</dependency>
+
+		<!-- flink JDBC -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-jdbc_${scala.binary.version}</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.apache.hbase</groupId>
+			<artifactId>hbase-client</artifactId>
+			<version>1.2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hbase</groupId>
+			<artifactId>hbase-server</artifactId>
+			<version>1.2.4</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-core</artifactId>
+			<version>${vertx.mysql.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-jdbc-client</artifactId>
+			<version>${vertx.mysql.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.101tec</groupId>
+			<artifactId>zkclient</artifactId>
+			<version>0.11</version>
+		</dependency>
+
+
+		<!-- ************************** Flink Connector END **************************  -->
+
+		<!-- Add logging framework, to produce console output when running in the IDE. -->
+		<!-- These dependencies are excluded from the application JAR by default. -->
+		<!-- Log4j -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.7</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<scope>${jar.scope}</scope>
+		</dependency>
+
+		<!-- FastJson -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.58</version>
+		</dependency>
+
+<!--		<dependency>-->
+<!--			<groupId>org.apache.httpcomponents</groupId>-->
+<!--			<artifactId>httpclient</artifactId>-->
+<!--			<version>4.5.3</version>-->
+<!--		</dependency>-->
+
+		<dependency>
+			<groupId>org.apache.bahir</groupId>
+			<artifactId>flink-connector-redis_2.11</artifactId>
+			<version>1.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpasyncclient</artifactId>
+			<version>4.1.4</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>1.1.21</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>${project.name}-${project.version}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4.1</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
